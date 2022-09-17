@@ -40,6 +40,9 @@ class Nation:
                     attack = []
         return updated
 
+    def __repr__(self):
+        return str(self.stats["color"])+":"+str(len(self.controlled))
+
 class Board:
     def __init__(self, width=100, height=75, buffer=50, size=12):
         self.width = width
@@ -52,9 +55,9 @@ class Board:
         self.board_width = len(self.board)
         self.board_height = len(self.board[0])
         self.updated = []
-        self.red_nation = Nation([], (255, 0, 0), 70, 10, 70)
-        self.blue_nation = Nation([], (0, 0, 255), 70, 15, 65)
-        self.green_nation = Nation([], (0, 255, 0), 40, 70, 40)
+        self.red_nation = Nation([], (255, 0, 0), 1, 0, 70)
+        self.blue_nation = Nation([], (0, 0, 255), 1, 0, 70)
+        self.green_nation = Nation([], (0, 255, 0), 1, 0, 70)
         self.nations = [self.red_nation, self.blue_nation, self.green_nation]
 
     def reset_board(self):
@@ -62,6 +65,20 @@ class Board:
         for nation in self.nations:
             nation.controlled = []
         self.updated = [(x, y) for x in range(len(self.board)) for y in range(len(self.board[0]))]
+        #print(len(self.updated))
+        self.update_board()
+
+    def reset_board_color(self):
+        self.board = self.define_board()
+        for nation in self.nations:
+            nation.controlled = []
+        for x in range(len(self.board)):
+            for y in range(len(self.board[x])):
+                nation = r.choice(self.nations)
+                self.update(x, y, nation)
+                #nation.controlled.append((x,y))
+        self.updated = [(x, y) for x in range(len(self.board)) for y in range(len(self.board[0]))]
+        
         #print(len(self.updated))
         self.update_board()
 
@@ -193,11 +210,18 @@ while run:
     if k[pg.K_0]:
         turns = 0
         board.reset_board()
+
+    if k[pg.K_1]:
+        turns = 0
+        board.reset_board_color()
         
     if k[pg.K_SPACE]:
         board.take_turn()
         turns+=1
         print(turns)
+        print("\t"+str(board.red_nation.__repr__()))
+        print("\t"+str(board.green_nation.__repr__()))
+        print("\t"+str(board.blue_nation.__repr__()))
         
     if k[pg.K_ESCAPE]:
         run=False
